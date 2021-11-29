@@ -21,6 +21,11 @@
   align-items: center;
 }
 
+
+.menu {
+  margin: 5px 0;
+}
+
 .footer a {
   display: flex;
   justify-content: center;
