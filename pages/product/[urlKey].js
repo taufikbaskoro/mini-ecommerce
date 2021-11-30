@@ -1,7 +1,5 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useQuery, gql } from '@apollo/client'
-import Image from 'next/image'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 import  ReactHtmlParser from 'react-html-parser'
 import Layout from '../../components/layout';
@@ -54,8 +52,22 @@ const GET_PRODUCT_BY_URL_KEY = gql`
 `
 
 export default function ProductDetail() {
+    const [carts, setCarts] = useState([]);
     const {query} = useRouter()
     const url_key = query.urlKey;
+
+    useEffect(() => {
+        let cart = sessionStorage.getItem('cart');
+        // console.log("cart : ", cart)
+        if(cart === null){
+            setCarts([])
+        }else{
+            // console.log(cart)
+            let result = JSON.parse(cart) || [];
+            setCarts(result)
+        }
+    }, [])
+
     const {data, loading, error} = useQuery(GET_PRODUCT_BY_URL_KEY, {
         variables: {
             urlKey: url_key
@@ -66,6 +78,19 @@ export default function ProductDetail() {
     if(error) return <p>error: {error}</p>
 
     const detail = data.products.items;
+
+    const handleAddToCart = (item) => {
+        if(carts.length === 0){
+            let arrayItem = [item]
+            let savedItem = JSON.stringify(arrayItem)
+            sessionStorage.setItem('cart', savedItem)
+        }else{
+            let shoppingCart = carts;
+            shoppingCart.push(item);
+            let savedItem = JSON.stringify(shoppingCart)
+            sessionStorage.setItem('cart', savedItem)
+        }
+    }
 
     return (
         <Layout>
@@ -91,12 +116,10 @@ export default function ProductDetail() {
                                             alt={result.name}
                                         />
                                         <CardContent>
-                                            <Typography variant="body2" color="text.secondary">
-                                                {parse}
-                                            </Typography>
+                                            {parse}
                                         </CardContent>
                                         <CardActions disableSpacing>
-                                            <IconButton aria-label="add to favorites">
+                                            <IconButton onClick={() => {handleAddToCart(result)}}  aria-label="add to favorites">
                                                 <ShoppingCartIcon />
                                             </IconButton>
                                         </CardActions>

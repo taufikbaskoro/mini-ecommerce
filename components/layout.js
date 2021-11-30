@@ -26,13 +26,21 @@ export default function Layout({ children }) {
                             Mini-Commerce
                         </Typography>
                         <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                            {pages.map((page) => (
-                            <Link key={page} href={`/`} passHref={true}>
-                                <Button sx={{ my: 2, color: 'white', display: 'block' }}>
-                                    {page}
-                                </Button>
-                            </Link>
-                            ))}
+                            {
+                                pages.map((page) => {
+                                    let loc = '/';
+                                    if(page === 'Cart') {
+                                        loc = '/cart';
+                                    }       
+                                    return (
+                                        <Link key={page} href={loc} passHref={true}>
+                                            <Button sx={{ my: 2, color: 'white', display: 'block' }}>
+                                                {page}
+                                            </Button>
+                                        </Link>
+                                    )
+                                })
+                            }
                         </Box>
                     </Toolbar>
                 </Container>
