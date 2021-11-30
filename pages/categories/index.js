@@ -5,6 +5,15 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 import styles from '../../styles/Home.module.css'
+import { styled } from '@mui/material/styles';
+import { Container } from '@mui/material'
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
+
+const Item = styled(Paper)(({ theme }) => ({
+    padding: '1rem',
+    textAlign: 'center',
+}));
 
 const GET_CATEGORY = gql`
     query {
@@ -27,21 +36,27 @@ const Categories = (props) => {
 
     return (
         <div>
-            <div>
+            <Container xs={{flexGrow: 1}}>
+                <Grid container spacing={2}>
                 {categories.map(category => {
                     if(category.include_in_menu === 1){
                         return (
-                            <div className={styles.menu} key={category.id}>
-                                <Link href={`/categories/${category.id}`}><a>{category.name}</a></Link>
-                                <br />
-                                {
-                                    category.image && (<Image layout={"fixed"} width={60} height={60} src={category.image} alt={category.name} />) || (<></>)
-                                }
-                            </div>
+                            <Grid item xs={4} className={styles.menu} key={category.id}>
+                                <Link href={`/categories/${category.id}`} passHref={true}>
+                                    <Item className={styles.paper}>
+                                        <a className={styles.anchor}>{category.name}</a>
+                                        <br />
+                                        {
+                                            category.image && (<Image layout={"fixed"} width={60} height={60} src={category.image} alt={category.name} />) || (<></>)
+                                        }
+                                    </Item>
+                                </Link>
+                            </Grid>
                         )
                     }
                 })}
-            </div>
+                </Grid>
+            </Container>
         </div>
     )
 }
