@@ -4,6 +4,17 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import  ReactHtmlParser from 'react-html-parser'
+import Layout from '../../components/layout';
+
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import CardMedia from '@mui/material/CardMedia';
+import CardContent from '@mui/material/CardContent';
+import CardActions from '@mui/material/CardActions';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import { Container, Grid } from '@mui/material'
 
 const GET_PRODUCT_BY_URL_KEY = gql`
     query getProduct($urlKey: String!) {
@@ -55,26 +66,48 @@ export default function ProductDetail() {
     if(error) return <p>error: {error}</p>
 
     const detail = data.products.items;
-    console.log(detail);
 
     return (
-        <div>
-            {
-                detail.map(result => {
-                    let price = result.price_range.maximum_price.regular_price.value;
-                    let parse = ReactHtmlParser(result.description.html);
-                    // console.log(parse)
-                    return (
-                        <div key={result.id}>
-                            <h2>{result.name}</h2>
-                            <Image layout={"fixed"} width={60} height={50} src={result.image.url} alt={result.name} />
-                            {parse}
-                            <p>{price}</p>
-                            <Link href={`/`}><a>Back to Home</a></Link>
-                        </div>
-                    )
-                })
-            }
-        </div>
+        <Layout>
+            <Container xs={{flexGrow: 1}}>
+                <Grid container>
+                    <Grid item xs={2}></Grid>
+                    {
+                        detail.map(result => {
+                            let price = result.price_range.maximum_price.regular_price.value;
+                            let parse = ReactHtmlParser(result.description.html);
+                            // console.log(parse)
+                            return (
+                                <Grid item xs={8} key={result.id}>
+                                    <Card>
+                                        <CardHeader
+                                            title={result.name}
+                                            subheader={`Rp. ${price}`}
+                                        />
+                                        <CardMedia
+                                            component="img"
+                                            height="300"
+                                            image={result.image.url}
+                                            alt={result.name}
+                                        />
+                                        <CardContent>
+                                            <Typography variant="body2" color="text.secondary">
+                                                {parse}
+                                            </Typography>
+                                        </CardContent>
+                                        <CardActions disableSpacing>
+                                            <IconButton aria-label="add to favorites">
+                                                <ShoppingCartIcon />
+                                            </IconButton>
+                                        </CardActions>
+                                        </Card>
+                                </Grid>
+                            )
+                        })
+                    }
+                    <Grid item xs={2}></Grid>
+                </Grid>
+            </Container>
+        </Layout>
     )
 }

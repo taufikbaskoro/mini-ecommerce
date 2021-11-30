@@ -1,7 +1,10 @@
 import Head from 'next/head'
 import Image from 'next/image'
+import Layout from '../components/layout'
 import styles from '../styles/Home.module.css'
 import Categories from './categories'
+
+import { Typography } from '@mui/material'
 
 export default function Home() {
   return (
@@ -12,9 +15,10 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}>
-        <Categories />
-      </main>
+      <Layout>
+          <Typography variant="h3">Category List</Typography>
+          <Categories />
+      </Layout>
     </div>
   )
 }
