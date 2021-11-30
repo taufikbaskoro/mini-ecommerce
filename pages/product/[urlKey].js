@@ -12,7 +12,9 @@ import CardActions from '@mui/material/CardActions';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import MuiAlert from '@mui/material/Alert';
 import { Container, Grid } from '@mui/material'
+import Snackbar from '@mui/material/Snackbar';
 
 const GET_PRODUCT_BY_URL_KEY = gql`
     query getProduct($urlKey: String!) {
@@ -51,8 +53,13 @@ const GET_PRODUCT_BY_URL_KEY = gql`
     }
 `
 
+const Alert = React.forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
+
 export default function ProductDetail() {
     const [carts, setCarts] = useState([]);
+    const [isOpen, setIsOpen] = useState(false);
     const {query} = useRouter()
     const url_key = query.urlKey;
 
@@ -79,6 +86,17 @@ export default function ProductDetail() {
 
     const detail = data.products.items;
 
+    const handleClick = () => {
+        setIsOpen(true)
+    }
+
+    const handleClose = (event, reason) => {
+        if(reason === 'clickaway'){
+            return;
+        }
+        setIsOpen(false);
+    }
+
     const handleAddToCart = (item) => {
         if(carts.length === 0){
             let arrayItem = [item]
@@ -90,6 +108,7 @@ export default function ProductDetail() {
             let savedItem = JSON.stringify(shoppingCart)
             sessionStorage.setItem('cart', savedItem)
         }
+        handleClick();
     }
 
     return (
@@ -130,6 +149,11 @@ export default function ProductDetail() {
                     }
                     <Grid item xs={2}></Grid>
                 </Grid>
+                <Snackbar open={isOpen} autoHideDuration={6000} onClose={handleClose}>
+                    <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+                        Product added to cart
+                    </Alert>
+                </Snackbar>
             </Container>
         </Layout>
     )
