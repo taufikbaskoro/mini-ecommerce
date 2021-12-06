@@ -4,6 +4,7 @@ import Layout from '../components/layout'
 import styles from '../styles/Home.module.css'
 import Categories from './categories'
 
+
 import { Typography } from '@mui/material'
 
 export default function Home() {
@@ -16,7 +17,7 @@ export default function Home() {
       </Head>
 
       <Layout>
-          <Typography variant="h3">Category List</Typography>
+          <Typography align="center" variant="h4" >Our Category List</Typography>
           <Categories />
       </Layout>
     </div>

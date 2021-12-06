@@ -1,57 +1,18 @@
 import React, { useEffect, useState } from 'react'
-import { useQuery, gql } from '@apollo/client'
 import { useRouter } from 'next/router'
+import Image from 'next/image'
 import  ReactHtmlParser from 'react-html-parser'
 import Layout from '../../components/layout';
+import useStyles from './styles';
 
-import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
-import CardMedia from '@mui/material/CardMedia';
-import CardContent from '@mui/material/CardContent';
-import CardActions from '@mui/material/CardActions';
+import { getProductByUrlKey } from '../../services/graphql';
+
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import MuiAlert from '@mui/material/Alert';
-import { Container, Grid } from '@mui/material'
+import { Container, Grid, Paper, Button } from '@mui/material'
 import Snackbar from '@mui/material/Snackbar';
-
-const GET_PRODUCT_BY_URL_KEY = gql`
-    query getProduct($urlKey: String!) {
-        products(filter: {
-        url_key: {
-            eq: $urlKey
-        }
-        }) {
-        items {
-            id
-            name
-            __typename
-            description {
-            html
-            }
-            image {
-            url
-            }
-            price_range {
-            maximum_price {
-                final_price {
-                value
-                }
-                regular_price {
-                value
-                }
-            }
-            }
-            qty_available
-            rating_summary
-            categories {
-            name
-            }
-        }
-        }
-    }
-`
 
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
@@ -62,6 +23,7 @@ export default function ProductDetail() {
     const [isOpen, setIsOpen] = useState(false);
     const {query} = useRouter()
     const url_key = query.urlKey;
+    const styles = useStyles();
 
     useEffect(() => {
         let cart = sessionStorage.getItem('cart');
@@ -75,14 +37,14 @@ export default function ProductDetail() {
         }
     }, [])
 
-    const {data, loading, error} = useQuery(GET_PRODUCT_BY_URL_KEY, {
+    const {data, loading, error} = getProductByUrlKey({
         variables: {
             urlKey: url_key
         }
     })
 
-    if(loading) return <h2>Data Loading...</h2>
-    if(error) return <p>error: {error}</p>
+    if(loading) return <Layout><Typography variant="p">Data Loading...</Typography></Layout>
+    if(error) return <Layout><Typography variant="p">error: {error}</Typography></Layout>
 
     const detail = data.products.items;
 
@@ -122,27 +84,34 @@ export default function ProductDetail() {
                             let parse = ReactHtmlParser(result.description.html);
                             // console.log(parse)
                             return (
-                                <Grid item xs={8} key={result.id}>
-                                    <Card>
-                                        <CardHeader
-                                            title={result.name}
-                                            subheader={`Rp. ${price}`}
-                                        />
-                                        <CardMedia
-                                            component="img"
-                                            height="300"
-                                            image={result.image.url}
-                                            alt={result.name}
-                                        />
-                                        <CardContent>
-                                            {parse}
-                                        </CardContent>
-                                        <CardActions disableSpacing>
-                                            <IconButton onClick={() => {handleAddToCart(result)}}  aria-label="add to favorites">
-                                                <ShoppingCartIcon />
-                                            </IconButton>
-                                        </CardActions>
-                                        </Card>
+                                <Grid item xs={12} key={result.id}>
+                                    <Paper className={styles.paper}>
+                                        <Grid container>
+                                            <Grid item xs={4} className={styles.image}>
+                                                <Image
+                                                    src={result.image.url}
+                                                    alt={result.name}
+                                                    width={400}
+                                                    height={500} />
+                                            </Grid>
+                                            <Grid item xs={8} className={styles.description}>
+                                                <div>
+                                                    <Typography variant="h6">{result.name}</Typography>
+                                                    <Typography variant="subtitle1">Rp. {price}</Typography>
+                                                </div>
+                                                <Typography variant="subtitle2">{parse}</Typography>
+                                                <Button
+                                                    color="warning"
+                                                    onClick={() => {handleAddToCart(result)}}
+                                                    loadingPosition="start"
+                                                    startIcon={<ShoppingCartIcon />}
+                                                    variant="outlined"
+                                                >
+                                                    Add to cart
+                                                </Button>
+                                            </Grid>
+                                        </Grid>
+                                    </Paper>
                                 </Grid>
                             )
                         })

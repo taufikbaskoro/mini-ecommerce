@@ -1,5 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
+import Head from 'next/head'
 
 import styles from '../styles/Home.module.css';
 import AppBar from '@mui/material/AppBar';
@@ -14,6 +15,9 @@ const pages = ['Home', 'Cart']
 export default function Layout({ children }) {
     return (
         <div>
+            <Head>
+                <title>Mini E-Commerce</title>
+            </Head>
             <AppBar position="static">
                 <Container maxWidth="xl">
                     <Toolbar disableGutters>

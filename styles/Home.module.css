@@ -6,6 +6,12 @@
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
+  background-color: #F9F871;
+  font-family: 'Inter', sans-serif !important;
+}
+
+.marginBottom1 {
+  margin-bottom: 1rem;
 }
 
 .anchor {

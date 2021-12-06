@@ -1,4 +1,3 @@
-import { useQuery, gql } from '@apollo/client';
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import React from 'react'
@@ -10,38 +9,19 @@ import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
-
-const GET_CATEGORY_PRODUCT_BY_ID = gql`
-    query getCategoryProduct($categoryId: Int!) {
-        category(id: $categoryId){
-            id
-            name
-            products {
-                items {
-                    __typename
-                    id
-                    name
-                    image {
-                        url
-                    }
-                    url_key
-                }
-            }
-        }
-    }
-`
+import { getCategoryProductById } from '../../services/graphql';
 
 export default function CategoryProduct() {
     const { query } = useRouter()
     const id = query.id;
-    const { data, loading, error } = useQuery(GET_CATEGORY_PRODUCT_BY_ID, {
+    const { data, loading, error } = getCategoryProductById({
         variables: {
             categoryId: id
         }
     });
 
-    if(loading) return <Typography variant="h5">Data Loading...</Typography>
-    if(error) return <Typography variant="h5">Error : {error}</Typography>
+    if(loading) return <Layout><Typography variant="p">Data Loading...</Typography></Layout>
+    if(error) return <Layout><Typography variant="p">Error : {error}</Typography></Layout>
 
     const products = data.category.products.items;
     const total = products.length
@@ -56,7 +36,7 @@ export default function CategoryProduct() {
 
     return (
         <Layout>
-            <Typography variant="h3">Product List</Typography>
+            <Typography variant="h4">Product List</Typography>
             <Container xs={{flexGrow: 1}} sx={{margin: "2rem 0"}}>
                 <Grid container spacing={2}>
                 {
@@ -75,13 +55,13 @@ export default function CategoryProduct() {
                                         ) || (<></>)
                                     }
                                     <CardContent>
-                                        <Typography gutterBottom variant="h5" component="div">
+                                        <Typography gutterBottom align="center" variant="p" component="div">
                                             {product.name}
                                         </Typography>
                                     </CardContent>
                                     <CardActions>
                                         <Link href={`/product/${product.url_key}`} passHref={true}>
-                                            <Button size="small">Detail</Button>
+                                            <Button fullWidth size="small">Detail</Button>
                                         </Link>
                                     </CardActions>
                                 </Card>
