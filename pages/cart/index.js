@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from 'react'
+import Image from 'next/image'
 import Layout from '../../components/layout'
 
-import { Typography, Container, Grid } from '@mui/material';
-import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
-import CardMedia from '@mui/material/CardMedia';
-import CardContent from '@mui/material/CardContent';
-import CardActions from '@mui/material/CardActions';
+import { Typography, Container } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import MuiAlert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
+
+
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
@@ -62,42 +67,48 @@ export default function Cart() {
 
     return (
         <Layout>
-            <Typography variant="h3">Product List</Typography>
-            <Container xs={{flexGrow: 1}} sx={{margin: "2rem 0"}}>
-                <Grid container spacing={2}>
+            <Typography textAlign={'center'} variant="h3">Shopping Cart</Typography>
+            <Container xs={{flexGrow: 1}} sx={{margin: "0 0"}}>
+                <TableContainer component={Paper}>
+                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                        <TableHead>
+                        <TableRow>
+                            <TableCell>Product Name</TableCell>
+                            <TableCell align="center">Image Product</TableCell>
+                            <TableCell align="center">Price</TableCell>
+                            <TableCell align="center">Action</TableCell>
+                        </TableRow>
+                        </TableHead>
+                        <TableBody>
                     {
                         carts && (
                         carts.map((cart, index) => {
                             let price = cart.price_range.maximum_price.regular_price.value;
                             return(
-                                <Grid item xs={4} key={cart.id}>
-                                    <Card>
-                                        <CardHeader
-                                            title={cart.name}
-                                            subheader="Jumlah"
-                                        />
-                                        <CardMedia
-                                            component="img"
-                                            height="300"
-                                            image={cart.image.url}
-                                            alt={cart.name}
-                                        />
-                                        <CardContent>
-                                            <Typography variant="body1" color="text.secondary">
-                                                Harga : {`Rp. ${price}`}
-                                            </Typography>
-                                        </CardContent>
-                                        <CardActions disableSpacing>
-                                            <IconButton onClick={() => {handleDeleteItem(index)}}  aria-label="add to favorites">
+                                <TableRow
+                                    key={cart.id} 
+                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }} >
+                                        <TableCell align="left">{cart.name}</TableCell>    
+                                        <TableCell align="center">
+                                            <Image 
+                                                width={100}
+                                                height={100}
+                                                src={cart.image.url} 
+                                                alt={cart.name} />
+                                        </TableCell>    
+                                        <TableCell align="center">Rp. {price}</TableCell>    
+                                        <TableCell align="center">
+                                            <IconButton onClick={() => handleDeleteItem(index)} aria-label="delete">
                                                 <DeleteIcon />
                                             </IconButton>
-                                        </CardActions>
-                                    </Card>
-                                </Grid>
+                                        </TableCell>    
+                                </TableRow>
                             )
                         })) || 'No Item in cart'
                     }
-                </Grid>
+                    </TableBody>
+                    </Table>
+                </TableContainer>
                 <Snackbar open={isOpen} autoHideDuration={6000} onClose={handleClose}>
                     <Alert onClose={handleClose} severity="warning" sx={{ width: '100%' }}>
                         Product deleted from cart
