@@ -3,7 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { getCategories } from '../../services/graphql'
 
-import styles from '../../styles/Home.module.css'
+import useStyles from '../../styles'
 import { styled } from '@mui/material/styles';
 import { Container, Typography } from '@mui/material'
 import Paper from '@mui/material/Paper';
@@ -17,6 +17,7 @@ const Item = styled(Paper)(({ theme }) => {
 });
 
 const Categories = (props) => {
+    const styles = useStyles();
     const {data, loading, error} = getCategories();
 
     if(loading) return <Typography variant="p">Data Loading...</Typography>
